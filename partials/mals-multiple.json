@@ -1,0 +1,85 @@
+{
+    "properties": {
+        "partial": {
+            "type": "string",
+            "enum": ["mals-multiple"],
+            "options": {
+                "hidden": true
+            }
+        },
+        "product": {
+            "type": "string",
+            "title": "Product"
+        },
+        "banner": {
+            "type": "boolean",
+            "title": "Banner",
+            "format": "checkbox"
+        },
+        "text_colour": {
+            "type": "string",
+            "title": "Text colour"
+        },
+        "description": {
+            "type": "string",
+            "title": "Description",
+            "format": "textarea"
+        },
+        "colours": {
+            "type": "array",
+            "title": "Colours",
+            "options": {
+                "collapsed": true
+            },
+            "items": {
+                "headerTemplate": "{{self.name}}",
+                "type": "object",
+                "format": "grid",
+                "options": {
+                    "disable_properties": false
+                },
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "links": [{
+                            "href": "/test/{{self}}.jpg",
+                            "mediaType": "image/jpeg"
+                        }]
+                    },
+                    "gauge": {
+                        "type": "string"
+                    }
+                },
+                "required": ["name"],
+                "defaultProperties": ["name"]
+            }
+        },
+        "radios": {
+            "type": "array",
+            "title": "Radios",
+            "options": {
+                "collapsed": true
+            },
+            "items": {
+                "headerTemplate": "{{self.name}} : {{self.price}}",
+                "type": "object",
+                "format": "grid",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "title": "Name"
+                    },
+                    "price": {
+                        "type": "number",
+                        "title": "Price"
+                    }
+
+                }
+            }
+        }
+    },
+    "type": "object",
+    "options": {
+        "keep_oneof_values": false
+    }
+}

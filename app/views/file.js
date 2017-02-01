@@ -321,6 +321,115 @@ module.exports = Backbone.View.extend({
     });
   },
 
+  // CUSTOM
+  initJSONEditor: function() {
+    var self = this;
+
+    console.log(this.model.get('content'));
+    $("#code").replaceWith("<div id=code></div>");
+    var yaml = this.model.get('content') || '';
+    console.log(this.config);
+
+    this.editor = new JSONEditor($('#code')[0], {
+        disable_edit_json: true,
+        disable_array_delete_all_rows: true,
+        disable_array_delete: true,
+        remove_empty_properties: true,
+        disable_array_delete_last_row: true,
+        no_additional_properties: true,
+        disable_properties: true,
+        required_by_default: true,
+        keep_oneof_values: false,
+    //    theme: "foundation5",
+    //    iconlib: "fontawesome4",
+        ajax: true,
+        startval: jsyaml.safeLoad(yaml),
+
+        // The schema for the editor
+        schema: {
+            "type": "object",
+            "options": {
+                "disable_collapse": true
+            },
+            "properties": {
+                "config": {
+                    "type": "object",
+                    "options": {
+                        "disable_collapse": true,
+                        "hidden": true
+                    },
+                    "properties": {
+                        "path": {
+                            "type": "string",
+                            "default": this.model.get('path')
+                        },
+                        "repo": {
+                            "type": "string",
+                            "default": this.repo.attributes.html_url
+                        }
+                    }
+                },
+                "page": {
+                    "type": "object",
+                    "options": {
+                        "disable_collapse": true
+                    },
+                    "properties": {
+                        "title": {
+                            "type": "string"
+                        },
+                        "description": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "products": {
+                    "type": "array",
+                    "options": {
+                        "disable_collapse": true
+                    },
+                    "items": {
+                        "headerTemplate": "{{self.product}}",
+                        "type": "object",
+                        "properties": {
+                            "partial": {
+                                "type": "string",
+                                "options": {
+                                    "hidden": true
+                                }
+                            }
+                        },
+                        "oneOf": [
+                            {
+                                "title": "Mals Multiple",
+                                $ref: "partials/mals-multiple.json"
+                            },
+                            {
+                                "title": "Mals Single",
+                                $ref: "partials/mals-single.json"
+                            }
+                        ]
+                    }
+                }
+            }
+        }
+    });
+
+    // this.editor.getValue = function() {
+    //   return Papa.unparse(this.getSourceData());
+    // };
+
+    // this.editor.setValue = function(newValue) {
+    //   var parsedValue = self.parseCSV(newValue);
+    //   this.loadData(parsedValue.data);
+    //   self.makeDirty();
+    // };
+
+    // // Check sessionStorage for existing stash
+    // // Apply if stash exists and is current, remove if expired
+    // this.stashApply();
+  },
+
   initCSVEditor: function() {
     var self = this;
 
@@ -586,6 +695,11 @@ module.exports = Backbone.View.extend({
       this.config = this.model.get('collection').config;
 
       // initialize the subviews
+      // CUSTOM
+      if (['yml','yaml'].indexOf(this.model.get('lang')) !== -1) {
+        this.initJSONEditor();
+      } else
+      // END CUSTOM
       if (file.useCSVEditor) {
         this.initCSVEditor();
       } else {
