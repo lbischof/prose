@@ -415,19 +415,30 @@ module.exports = Backbone.View.extend({
         }
     });
 
-    // this.editor.getValue = function() {
-    //   return Papa.unparse(this.getSourceData());
-    // };
+    this.editor.on('change',function() {
+        console.log("change");
+        self.makeDirty();
+    });
 
-    // this.editor.setValue = function(newValue) {
-    //   var parsedValue = self.parseCSV(newValue);
-    //   this.loadData(parsedValue.data);
-    //   self.makeDirty();
-    // };
+    this.editor.on('ready',function() {
+        console.log("ready");
+    });
 
-    // // Check sessionStorage for existing stash
-    // // Apply if stash exists and is current, remove if expired
-    // this.stashApply();
+    var getValue = this.editor.getValue;
+    this.editor.getValue = function() {
+        console.log("getValue");
+        return getValue.apply(this,arguments);
+    }
+
+    var setValue = this.editor.setValue;
+    this.editor.setValue = function(newValue) {
+       console.log("setValue");
+       return setValue.apply(this,arguments);
+     };
+
+     // Check sessionStorage for existing stash
+     // Apply if stash exists and is current, remove if expired
+     //this.stashApply();
   },
 
   initCSVEditor: function() {
