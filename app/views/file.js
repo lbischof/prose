@@ -320,16 +320,22 @@ module.exports = Backbone.View.extend({
       skipEmptyLines: true
     });
   },
-
   // CUSTOM
+  getJSONEditorSchema: function() {
+      if (this.config.jsoneditor) {
+        for (var i = 0; i < this.config.jsoneditor.length; i++) {
+          if (this.model.get('path').match(this.config.jsoneditor[i].path)) {
+            return this.config.jsoneditor[i].schema;
+          }
+        }
+      }
+      return null;
+  },
   initJSONEditor: function() {
     var self = this;
 
-    console.log(this.model.get('content'));
     $("#code").replaceWith("<div id=code></div>");
     var yaml = this.model.get('content') || '';
-    console.log(this.config);
-
     this.editor = new JSONEditor($('#code')[0], {
         disable_edit_json: true,
         disable_array_delete_all_rows: true,
@@ -340,106 +346,39 @@ module.exports = Backbone.View.extend({
         disable_properties: true,
         required_by_default: true,
         keep_oneof_values: false,
-    //    theme: "foundation5",
-    //    iconlib: "fontawesome4",
+        //    theme: "foundation5",
+        //    iconlib: "fontawesome4",
         ajax: true,
         startval: jsyaml.safeLoad(yaml),
-
         // The schema for the editor
-        schema: {
-            "type": "object",
-            "options": {
-                "disable_collapse": true
-            },
-            "properties": {
-                "config": {
-                    "type": "object",
-                    "options": {
-                        "disable_collapse": true,
-                        "hidden": true
-                    },
-                    "properties": {
-                        "path": {
-                            "type": "string",
-                            "default": this.model.get('path')
-                        },
-                        "repo": {
-                            "type": "string",
-                            "default": this.repo.attributes.html_url
-                        }
-                    }
-                },
-                "page": {
-                    "type": "object",
-                    "options": {
-                        "disable_collapse": true
-                    },
-                    "properties": {
-                        "title": {
-                            "type": "string"
-                        },
-                        "description": {
-                            "type": "string"
-                        }
-                    }
-                },
-                "products": {
-                    "type": "array",
-                    "options": {
-                        "disable_collapse": true
-                    },
-                    "items": {
-                        "headerTemplate": "{{self.product}}",
-                        "type": "object",
-                        "properties": {
-                            "partial": {
-                                "type": "string",
-                                "options": {
-                                    "hidden": true
-                                }
-                            }
-                        },
-                        "oneOf": [
-                            {
-                                "title": "Mals Multiple",
-                                $ref: "partials/mals-multiple.json"
-                            },
-                            {
-                                "title": "Mals Single",
-                                $ref: "partials/mals-single.json"
-                            }
-                        ]
-                    }
-                }
-            }
-        }
+        schema: { "$ref": this.getJSONEditorSchema() }
     });
 
-    this.editor.on('change',function() {
-        console.log("change");
-        self.makeDirty();
-    });
-
+    var that = this;
     this.editor.on('ready',function() {
+        var config = that.editor.getEditor('root.config');
+        if (config) {
+            config.setValue({
+                path: that.model.get('path'),
+                repo: that.repo.attributes.html_url
+            })
+        }
+        //that.editor.on('change', function() { self.makeDirty() });
         console.log("ready");
     });
 
     var getValue = this.editor.getValue;
     this.editor.getValue = function() {
-        console.log("getValue");
-        return getValue.apply(this,arguments);
+        var data = getValue.apply(this,arguments);
+        delete data.config;
+        return jsyaml.safeDump(data);
     }
 
-    var setValue = this.editor.setValue;
-    this.editor.setValue = function(newValue) {
-       console.log("setValue");
-       return setValue.apply(this,arguments);
-     };
-
-     // Check sessionStorage for existing stash
-     // Apply if stash exists and is current, remove if expired
-     //this.stashApply();
+    // Check sessionStorage for existing stash
+    // Apply if stash exists and is current, remove if expired
+    //this.stashApply();
   },
+  // END CUSTOM
 
   initCSVEditor: function() {
     var self = this;
@@ -707,7 +646,7 @@ module.exports = Backbone.View.extend({
 
       // initialize the subviews
       // CUSTOM
-      if (['yml','yaml'].indexOf(this.model.get('lang')) !== -1) {
+      if (this.getJSONEditorSchema()) {
         this.initJSONEditor();
       } else
       // END CUSTOM
