@@ -322,7 +322,7 @@ module.exports = Backbone.View.extend({
   },
   // CUSTOM
   getJSONEditorSchema: function() {
-      if (this.config.jsoneditor) {
+      if (this.config && this.config.jsoneditor) {
         for (var i = 0; i < this.config.jsoneditor.length; i++) {
           if (this.model.get('path').match(this.config.jsoneditor[i].path)) {
             return this.config.jsoneditor[i].schema;
