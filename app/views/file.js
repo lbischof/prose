@@ -334,9 +334,9 @@ module.exports = Backbone.View.extend({
   initJSONEditor: function() {
     var self = this;
 
-    $("#code").replaceWith("<div id=code></div>");
+    $("#code").replaceWith("<div id=jsoneditor></div>");
     var yaml = this.model.get('content') || '';
-    this.editor = new JSONEditor($('#code')[0], {
+    this.editor = new JSONEditor($('#jsoneditor')[0], {
         disable_edit_json: true,
         disable_array_delete_all_rows: true,
         disable_array_delete: true,

@@ -1,0 +1,30 @@
+#jsoneditor button {
+    display: inline-block;
+    width: auto;
+    padding: 5px 10px;
+}
+#jsoneditor button:hover {
+    background: #444;
+}
+#jsoneditor div[data-schemapath$="radios"] .row > div,
+#jsoneditor div[data-schemapath$="colours"] .row > div {
+    display: inline-block;
+}
+#jsoneditor div[data-schemapath="root"] > h3 {
+    display: none;
+}
+#jsoneditor .tabs div {
+    padding: 7px 0;
+}
+@media (max-width: 600px) {
+    #jsoneditor .tabs {
+        width: 100% !important;
+        float: none !important;
+    }
+    #jsoneditor .tabs span {
+        font-size: 1.5em;
+    }
+    #jsoneditor .content {
+        margin-left: 0 !important;
+    }
+}
