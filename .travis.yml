@@ -23,6 +23,7 @@ cache:
 
 before_install:
 - chmod +x ./.build_scripts/deploy.sh
+- mv oauth_prod.json oauth.json
 
 before_script:
 - npm test
