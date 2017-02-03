@@ -325,7 +325,7 @@ module.exports = Backbone.View.extend({
       if (this.config && this.config.jsoneditor) {
         for (var i = 0; i < this.config.jsoneditor.length; i++) {
           if (this.model.get('path').match(this.config.jsoneditor[i].path)) {
-            return this.config.jsoneditor[i].schema;
+            return "https://raw.githubusercontent.com/" + this.repo.get('owner').login +"/"+ this.repo.get('name') +"/"+ this.branch +"/"+ this.config.jsoneditor[i].schema;
           }
         }
       }
@@ -363,8 +363,12 @@ module.exports = Backbone.View.extend({
                 repo: that.repo.attributes.html_url
             })
         }
-        //that.editor.on('change', function() { self.makeDirty() });
         console.log("ready");
+    });
+
+    this.editor.on('change', function() {
+        // Compare with initial value, because change fires too many times at the start
+        if (that.editor.getValue() != yaml) self.makeDirty();
     });
 
     var getValue = this.editor.getValue;
