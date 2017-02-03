@@ -4,7 +4,7 @@ node_js:
 
 env:
   global:
-  - GH_REF=github.com/prose/prose.git
+  - GH_REF=github.com/lbischof/prose.git
   - CXX=g++-4.8
   - DEPLOY_BRANCH=master
   - secure: R+ZWJe6XOXit4QKOeQqlHw20k6CDuqDXEHo3SSkkdsEax+cWxIaKPv8C9zp+IA8SM32uz6DNkfo5wGUJ/HCUE/S3WZqlr7qijroshjsmcZPRx6+TxVRzE1Xp0iMbeGibSCFZGrWlJmYgHnq5rQAFtjiztNhkSmkhuq3d9nsg8xM=
