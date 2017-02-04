@@ -346,12 +346,10 @@ module.exports = Backbone.View.extend({
         disable_properties: true,
         required_by_default: true,
         keep_oneof_values: false,
-        //    theme: "foundation5",
-        //    iconlib: "fontawesome4",
         ajax: true,
         startval: jsyaml.safeLoad(yaml),
         // The schema for the editor
-        schema: { "$ref": this.getJSONEditorSchema() }
+        schema: { "$ref": this.schema }
     });
 
     var that = this;
@@ -375,7 +373,7 @@ module.exports = Backbone.View.extend({
     this.editor.getValue = function() {
         var data = getValue.apply(this,arguments);
         delete data.config;
-        return jsyaml.safeDump(data);
+        return jsyaml.safeDump(data, { lineWidth: -1 });
     }
 
     // Check sessionStorage for existing stash
@@ -650,7 +648,8 @@ module.exports = Backbone.View.extend({
 
       // initialize the subviews
       // CUSTOM
-      if (this.getJSONEditorSchema()) {
+      this.schema = this.getJSONEditorSchema();
+      if (this.schema) {
         this.initJSONEditor();
       } else
       // END CUSTOM
