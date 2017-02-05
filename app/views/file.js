@@ -325,7 +325,7 @@ module.exports = Backbone.View.extend({
       if (this.config && this.config.jsoneditor) {
         for (var i = 0; i < this.config.jsoneditor.length; i++) {
           if (this.model.get('path').match(this.config.jsoneditor[i].path)) {
-            return "https://raw.githubusercontent.com/" + this.repo.get('owner').login +"/"+ this.repo.get('name') +"/"+ this.branch +"/"+ this.config.jsoneditor[i].schema;
+            return "https://raw.githubusercontent.com/" + this.repo.attributes.full_name +"/"+ this.branch +"/"+ this.config.jsoneditor[i].schema;
           }
         }
       }
