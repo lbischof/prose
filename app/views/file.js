@@ -345,6 +345,7 @@ module.exports = Backbone.View.extend({
         disable_properties: true,
         keep_oneof_values: false,
         ajax: true,
+        template: "markup",
         // The schema for the editor
         schema: { "$ref": this.schema }
     });
