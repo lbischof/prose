@@ -344,11 +344,14 @@ module.exports = Backbone.View.extend({
         no_additional_properties: true,
         disable_properties: true,
         keep_oneof_values: false,
+        remove_empty_properties: true,
         ajax: true,
         template: "markup",
-        // The schema for the editor
         schema: { "$ref": this.schema }
     });
+    Mark.pipes.sanitize = function(str) {
+        return str.toLowerCase().replace(/[^0-9a-z](\(.*?\))?/, '');
+    }
 
     var that = this;
     this.editor.on('ready',function() {
@@ -357,8 +360,10 @@ module.exports = Backbone.View.extend({
         var config = that.editor.getEditor('root.config');
         if (config) {
             config.setValue({
+                page: that.model.get('name').replace("."+that.model.get('extension'), ''),
                 path: that.model.get('path'),
-                repo: that.repo.attributes.html_url
+                repo: that.repo.attributes.full_name,
+                branch: that.branch
             })
         }
         console.log("ready");
