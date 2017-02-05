@@ -340,20 +340,19 @@ module.exports = Backbone.View.extend({
         disable_edit_json: true,
         disable_array_delete_all_rows: true,
         disable_array_delete: true,
-        remove_empty_properties: true,
         disable_array_delete_last_row: true,
         no_additional_properties: true,
         disable_properties: true,
-        required_by_default: true,
         keep_oneof_values: false,
         ajax: true,
-        startval: jsyaml.safeLoad(yaml),
         // The schema for the editor
         schema: { "$ref": this.schema }
     });
 
     var that = this;
     this.editor.on('ready',function() {
+        // fix startValue not showing empty properties by default
+        that.editor.root.setValue(jsyaml.safeLoad(yaml), true);
         var config = that.editor.getEditor('root.config');
         if (config) {
             config.setValue({
