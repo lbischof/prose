@@ -325,7 +325,7 @@ module.exports = Backbone.View.extend({
       if (this.config && this.config.jsoneditor) {
         for (var i = 0; i < this.config.jsoneditor.length; i++) {
           if (this.model.get('path').match(this.config.jsoneditor[i].path)) {
-            return "https://raw.githubusercontent.com/" + this.repo.attributes.full_name +"/"+ this.branch +"/"+ this.config.jsoneditor[i].schema;
+            return "https://raw.githubusercontent.com/" + this.repo.attributes.full_name +"/"+ this.collection.branch.get('sha') +"/"+ this.config.jsoneditor[i].schema;
           }
         }
       }
@@ -362,6 +362,7 @@ module.exports = Backbone.View.extend({
             config.setValue({
                 page: that.model.get('name').replace("."+that.model.get('extension'), ''),
                 path: that.model.get('path'),
+                sha: that.collection.branch.get('sha'),
                 repo: that.repo.attributes.full_name,
                 branch: that.branch
             })
