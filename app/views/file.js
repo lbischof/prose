@@ -335,7 +335,7 @@ module.exports = Backbone.View.extend({
     var self = this;
 
     xhook.before(function(request) {
-        if (request.async && request.method == 'GET' && request.url.endsWith('.json')) {
+        if (request.async && request.method == 'GET' && request.url.endsWith('.json') && ! request.url.startsWith('http')) {
             console.log('Converted '+request.url+' to:')
             request.url="https://raw.githubusercontent.com/" + self.repo.attributes.full_name +"/"+ self.collection.branch.get('sha') +"/"+request.url;
             console.log(request.url);
