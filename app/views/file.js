@@ -325,7 +325,7 @@ module.exports = Backbone.View.extend({
       if (this.config && this.config.jsoneditor) {
         for (var i = 0; i < this.config.jsoneditor.length; i++) {
           if (this.model.get('path').match(this.config.jsoneditor[i].path)) {
-            return "https://raw.githubusercontent.com/" + this.repo.attributes.full_name +"/"+ this.collection.branch.get('sha') +"/"+ this.config.jsoneditor[i].schema;
+            return this.config.jsoneditor[i].schema;
           }
         }
       }
@@ -334,6 +334,13 @@ module.exports = Backbone.View.extend({
   initJSONEditor: function() {
     var self = this;
 
+    xhook.before(function(request) {
+        if (request.async && request.method == 'GET' && request.url.endsWith('.json')) {
+            console.log('Converted '+request.url+' to:')
+            request.url="https://raw.githubusercontent.com/" + self.repo.attributes.full_name +"/"+ self.collection.branch.get('sha') +"/"+request.url;
+            console.log(request.url);
+        }
+    });
     $("#code").replaceWith("<div id=jsoneditor></div>");
     this.editor = new JSONEditor($('#jsoneditor')[0], {
         disable_edit_json: true,
@@ -352,23 +359,22 @@ module.exports = Backbone.View.extend({
         return str.toLowerCase().replace(/[^0-9a-z](\(.*?\))?/, '');
     }
 
-    var that = this;
     var initialContent = this.model.get('content') || '';
     this.editor.on('ready',function() {
         // fix startValue not showing empty properties by default
-        if (that.model.get('lang') == 'yaml') {
-            that.editor.root.setValue(jsyaml.safeLoad(initialContent), true);
+        if (self.model.get('lang') == 'yaml') {
+            self.editor.root.setValue(jsyaml.safeLoad(initialContent), true);
         } else {
-            that.editor.root.setValue(initialContent, true);
+            self.editor.root.setValue(initialContent, true);
         }
-        var config = that.editor.getEditor('root.config');
+        var config = self.editor.getEditor('root.config');
         if (config) {
             config.setValue({
-                page: that.model.get('name').replace("."+that.model.get('extension'), ''),
-                path: that.model.get('path'),
-                sha: that.collection.branch.get('sha'),
-                repo: that.repo.attributes.full_name,
-                branch: that.branch
+                page: self.model.get('name').replace("."+self.model.get('extension'), ''),
+                path: self.model.get('path'),
+                sha: self.collection.branch.get('sha'),
+                repo: self.repo.attributes.full_name,
+                branch: self.branch
             })
         }
         console.log("ready");
@@ -376,14 +382,14 @@ module.exports = Backbone.View.extend({
 
     this.editor.on('change', function() {
         // Compare with initial value, because change fires too many times at the start
-        if (that.editor.getValue() != initialContent) self.makeDirty();
+        if (self.editor.getValue() != initialContent) self.makeDirty();
     });
 
     var getValue = this.editor.getValue;
     this.editor.getValue = function() {
         var data = getValue.apply(this,arguments);
         delete data.config;
-        if (that.model.get('lang') == 'yaml') {
+        if (self.model.get('lang') == 'yaml') {
             data = jsyaml.safeDump(data, { lineWidth: -1 });
         }
         return data;
