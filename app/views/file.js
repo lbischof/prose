@@ -335,7 +335,6 @@ module.exports = Backbone.View.extend({
     var self = this;
 
     $("#code").replaceWith("<div id=jsoneditor></div>");
-    var yaml = this.model.get('content') || '';
     this.editor = new JSONEditor($('#jsoneditor')[0], {
         disable_edit_json: true,
         disable_array_delete_all_rows: true,
@@ -354,9 +353,14 @@ module.exports = Backbone.View.extend({
     }
 
     var that = this;
+    var initialContent = this.model.get('content') || '';
     this.editor.on('ready',function() {
         // fix startValue not showing empty properties by default
-        that.editor.root.setValue(jsyaml.safeLoad(yaml), true);
+        if (that.model.get('lang') == 'yaml') {
+            that.editor.root.setValue(jsyaml.safeLoad(initialContent), true);
+        } else {
+            that.editor.root.setValue(initialContent, true);
+        }
         var config = that.editor.getEditor('root.config');
         if (config) {
             config.setValue({
@@ -372,14 +376,17 @@ module.exports = Backbone.View.extend({
 
     this.editor.on('change', function() {
         // Compare with initial value, because change fires too many times at the start
-        if (that.editor.getValue() != yaml) self.makeDirty();
+        if (that.editor.getValue() != initialContent) self.makeDirty();
     });
 
     var getValue = this.editor.getValue;
     this.editor.getValue = function() {
         var data = getValue.apply(this,arguments);
         delete data.config;
-        return jsyaml.safeDump(data, { lineWidth: -1 });
+        if (that.model.get('lang') == 'yaml') {
+            data = jsyaml.safeDump(data, { lineWidth: -1 });
+        }
+        return data;
     }
 
     // Check sessionStorage for existing stash
